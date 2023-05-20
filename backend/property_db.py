@@ -1,4 +1,5 @@
 import sqlite3
+from property import Property
 
 class PropertyRepository:
     def __init__(self, db_path):
@@ -25,5 +26,5 @@ class PropertyRepository:
 
             for row in cursor:
                 properties.append(Property(financial=row[0], city=row[1], address=row[2], type=row[3], style=row[4], mls_number=row[5], date=row[6], status=row[7], bedrooms=row[8], bathrooms=row[9], year_built=row[10], square_feet=row[11], acres=row[12], school_district=row[13], company=row[14]))
-
+                
             return properties
