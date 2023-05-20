@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from property import Property, PropertyEncoder
+
+from property_db import PropertyRepository
+from property import Property
 
 def perform_search(result_id, page=None):
     
@@ -79,6 +81,6 @@ while (current_page <= total_pages):
     search_soup = perform_search(result_id,current_page + 1)
     current_page, total_pages = parse_page_info(search_soup)
 
-
-with open("house_info.json", "w") as f:
-    json.dump(parsed_listings, f, indent=4, cls=PropertyEncoder)
+repo = PropertyRepository('./database/db.sqlite3')
+repo.save_properties(parsed_listings)
+print("saved")
