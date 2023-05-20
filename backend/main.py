@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from property import Property
 
 def perform_search(result_id, page=None):
     
@@ -68,7 +69,10 @@ while (current_page <= total_pages):
     listings = search_soup.select(".listing-lg.listing.panel")
 
     for listing in listings:
-        parsed_listings.append(parse_listing(listing))
+        parsed_listing = parse_listing(listing)
+        prop = Property.json_to_property(parsed_listing)
+        print(prop)
+        parsed_listings.append(parsed_listing)
 
     if (current_page == total_pages):
         break
