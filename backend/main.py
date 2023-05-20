@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from property import Property
+from property import Property, PropertyEncoder
 
 def perform_search(result_id, page=None):
     
@@ -61,7 +61,7 @@ result_id = '3bd83cfeb2c186634c2ddb019b7f8ff'
 search_soup = perform_search(result_id)
 current_page, total_pages = parse_page_info(search_soup)
 
-parsed_listings = []
+parsed_listings: list[Property] = []
 
 while (current_page <= total_pages):
     print(f'Page {current_page}')
@@ -70,9 +70,8 @@ while (current_page <= total_pages):
 
     for listing in listings:
         parsed_listing = parse_listing(listing)
-        prop = Property.json_to_property(parsed_listing)
-        print(prop)
-        parsed_listings.append(parsed_listing)
+        prop: Property = Property.json_to_property(parsed_listing)
+        parsed_listings.append(prop)
 
     if (current_page == total_pages):
         break
@@ -82,4 +81,4 @@ while (current_page <= total_pages):
 
 
 with open("house_info.json", "w") as f:
-    json.dump(parsed_listings, f, indent=4)
+    json.dump(parsed_listings, f, indent=4, cls=PropertyEncoder)

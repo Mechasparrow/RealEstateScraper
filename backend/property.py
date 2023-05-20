@@ -1,3 +1,5 @@
+import json
+
 class Property:
     def __init__(self, financial=None, city=None, address=None, type=None, style=None, mls_number=None, date=None, status=None, bedrooms=None, bathrooms=None, year_built=None, square_feet=None, acres=None, school_district=None, company=None):
         self.financial = financial
@@ -19,6 +21,28 @@ class Property:
     def __repr__(self):
         return f"Property(financial={self.financial}, city={self.city}, address={self.address}, type={self.type}, style={self.style}, mls_number={self.mls_number}, date={self.date}, status={self.status}, bedrooms={self.bedrooms}, bathrooms={self.bathrooms}, year_built={self.year_built}, square_feet={self.square_feet}, acres={self.acres}, school_district={self.school_district}, company={self.company})"
     
+    def to_json(self):
+        return json.dumps(self.__dict__)
+    
+    def __dict__(self):
+        return {
+            "financial": self.financial,
+            "city": self.city,
+            "address": self.address,
+            "type": self.type,
+            "style": self.style,
+            "mls_number": self.mls_number,
+            "date": self.date,
+            "status": self.status,
+            "bedrooms": self.bedrooms,
+            "bathrooms": self.bathrooms,
+            "year_built": self.year_built,
+            "square_feet": self.square_feet,
+            "acres": self.acres,
+            "school_district": self.school_district,
+            "company": self.company,
+        }
+    
     def json_to_property(data):
         prop = Property()
         prop.financial = data.get("financial")
@@ -38,3 +62,26 @@ class Property:
         prop.company = data.get("company")
         
         return prop
+    
+class PropertyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Property):
+            return {
+                "financial": obj.financial,
+                "city": obj.city,
+                "address": obj.address,
+                "type": obj.type,
+                "style": obj.style,
+                "mls_number": obj.mls_number,
+                "date": obj.date,
+                "status": obj.status,
+                "bedrooms": obj.bedrooms,
+                "bathrooms": obj.bathrooms,
+                "year_built": obj.year_built,
+                "square_feet": obj.square_feet,
+                "acres": obj.acres,
+                "school_district": obj.school_district,
+                "company": obj.company,
+            }
+        else:
+            return super().default(obj)
