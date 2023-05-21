@@ -17,7 +17,7 @@ def perform_search(result_id, page=None):
     return search_soup
 
 def parse_page_info(search_results: BeautifulSoup):
-    listing_pager = search_soup.select_one('.pager').select('li')[1].text.split(' ')
+    listing_pager = search_results.select_one('.pager').select('li')[1].text.split(' ')
     current_page = int(listing_pager[1])
     total_pages = int(listing_pager[3])
 
@@ -59,28 +59,32 @@ def parse_listing(listing: BeautifulSoup):
        
     return house_info
         
-result_id = '3bd83cfeb2c186634c2ddb019b7f8ff'
-search_soup = perform_search(result_id)
-current_page, total_pages = parse_page_info(search_soup)
-
-parsed_listings: list[Property] = []
-
-while (current_page <= total_pages):
-    print(f'Page {current_page}')
-    
-    listings = search_soup.select(".listing-lg.listing.panel")
-
-    for listing in listings:
-        parsed_listing = parse_listing(listing)
-        prop: Property = Property.json_to_property(parsed_listing)
-        parsed_listings.append(prop)
-
-    if (current_page == total_pages):
-        break
-
-    search_soup = perform_search(result_id,current_page + 1)
+def scrape_search(search_id: str) -> list[Property]:
+    result_id = search_id
+    search_soup = perform_search(result_id)
     current_page, total_pages = parse_page_info(search_soup)
 
+    parsed_listings: list[Property] = []
+
+    while (current_page <= total_pages):
+        print(f'Page {current_page}')
+        
+        listings = search_soup.select(".listing-lg.listing.panel")
+
+        for listing in listings:
+            parsed_listing = parse_listing(listing)
+            prop: Property = Property.json_to_property(parsed_listing)
+            parsed_listings.append(prop)
+
+        if (current_page == total_pages):
+            break
+
+        search_soup = perform_search(result_id,current_page + 1)
+        current_page, total_pages = parse_page_info(search_soup)
+        
+    return parsed_listings
+
+parsed_listings = scrape_search('3bd83cfeb2c186634c2ddb019b7f8ff')
 repo = PropertyRepository('./database/db.sqlite3')
 repo.save_properties(parsed_listings)
 print("saved")
